@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thiệp mời 📸</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 400;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            animation: bounceIn 1s ease-out;
+            position: relative;
+            z-index: 10;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .question {
+            font-size: 2.5rem;
+            color: #ff6b9d;
+            margin-bottom: 3rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            animation: pulse 2s infinite;
+            font-weight: 700;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .choices {
+            display: flex;
+            gap: 3rem;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .choice {
+            padding: 1.5rem 2.5rem;
+            font-size: 1.8rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            user-select: none;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .choice:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .okiiii {
+            background: linear-gradient(45deg, #ff6b9d, #ff8fab);
+            color: white;
+        }
+
+        .khom {
+            background: linear-gradient(45deg, #a8e6cf, #88d8a3);
+            color: #2d5a3f;
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
+        }
+
+        /* Modal overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s ease;
+            z-index: 1000;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Google Form container */
+        .google-form-container {
+            background: linear-gradient(135deg, #fff, #ffeef8);
+            padding: 2rem;
+            border-radius: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            transform: scale(0.7);
+            transition: transform 0.5s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.show .google-form-container {
+            transform: scale(1);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .form-title {
+            font-size: 2rem;
+            color: #ff6b9d;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .form-subtitle {
+            color: #666;
+            font-size: 1.2rem;
+            font-weight: 400;
+        }
+
+        /* Custom Google Form styling */
+        .freebirdFormviewerViewFormContent {
+            font-family: 'Montserrat', sans-serif !important;
+            font-weight: 400 !important;
+        }
+
+        .freebirdFormviewerComponentsTextShortText {
+            border-radius: 15px !important;
+            border: 2px solid #ffeef8 !important;
+            padding: 1rem !important;
+            font-size: 1.1rem !important;
+            transition: border-color 0.3s ease !important;
+            font-weight: 400 !important;
+        }
+
+        .freebirdFormviewerComponentsTextShortText:focus,
+        .freebirdFormviewerComponentsTextParagraphText:focus {
+            border-color: #ff6b9d !important;
+            box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1) !important;
+        }
+
+        .freebirdFormviewerComponentsTextParagraphText {
+            border-radius: 15px !important;
+            border: 2px solid #ffeef8 !important;
+            padding: 1rem !important;
+            font-size: 1.1rem !important;
+            resize: vertical !important;
+            min-height: 100px !important;
+            font-weight: 400 !important;
+        }
+
+        .freebirdFormviewerViewItemRadioGroupLabel {
+            color: #ff6b9d !important;
+            font-weight: 400 !important;
+        }
+
+        .result {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 3rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s ease;
+            z-index: 1000;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 400;
+        }
+
+        .result.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .emoji {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .question { font-size: 1.8rem; margin-bottom: 2rem; }
+            .choices { gap: 1.5rem; }
+            .choice { padding: 1rem 2rem; font-size: 1.4rem; }
+            .google-form-container { padding: 1.5rem; margin: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="question">15/6 này đi chụp kỷ yếu zới tui nha? 📸✨</div>
+        <div class="choices">
+            <button class="choice okiiii" id="okBtn">YARSHHH</button>
+            <button class="choice khom" id="khomBtn">khom :(</button>
+        </div>
+    </div>
+    <div class="modal-overlay" id="googleFormModal">
+        <div class="google-form-container">
+            <div class="form-header">
+                <div class="form-title">YAYYY LOVE U SO MUCH!</div>
+                <div class="form-subtitle">Để lại thông tin cho bố điểm danh nhó 🥰💕</div>
+            </div>
+            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdDBQ5bsHzk36TXa8GJ8Pr4cTdbkcz-gT5LF2Rc5QclFFyTxw/viewform?embedded=true" width="430" height="500" frameborder="0" marginheight="0" marginwidth="0">Đang tải…</iframe>
+        </div>
+    </div>
+
+    <!-- Result modal -->
+    <div class="result" id="result">
+        <div class="emoji" id="resultEmoji"></div>
+        <div id="resultText"></div>
+    </div>
+
+    <script>
+        const okBtn = document.getElementById('okBtn');
+        const khomBtn = document.getElementById('khomBtn');
+        const googleFormModal = document.getElementById('googleFormModal');
+        const result = document.getElementById('result');
+        const resultEmoji = document.getElementById('resultEmoji');
+        const resultText = document.getElementById('resultText');
+        
+        let khomCount = 0;
+        const MAX_KHOM_CLICKS = 4;
+
+        okBtn.addEventListener('click', function() {
+            googleFormModal.classList.add('show');
+            okBtn.style.pointerEvents = 'none';
+            khomBtn.style.pointerEvents = 'none';
+        });
+
+        khomBtn.addEventListener('click', function() {
+            khomCount++;
+            
+            const okScale = 1 + khomCount * 0.15;
+            okBtn.style.transform = `scale(${okScale})`;
+            okBtn.style.fontSize = `${1.8 + khomCount * 0.08}rem`;
+            okBtn.style.animation = 'pulse 0.3s infinite';
+            
+            if (khomCount <= MAX_KHOM_CLICKS) {
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+                const maxLeft = viewportWidth * 0.7;
+                const maxTop = viewportHeight * 0.6;
+                
+                const newLeft = Math.random() * maxLeft;
+                const newTop = Math.random() * maxTop + 100;
+                const newScale = 1 - (khomCount * 0.12);
+                const newOpacity = 1 - (khomCount * 0.12);
+                const newFontSize = 1.8 - (khomCount * 0.12);
+                
+                khomBtn.style.position = 'fixed';
+                khomBtn.style.zIndex = '20';
+                khomBtn.style.transform = `translate(${newLeft}px, ${newTop}px) scale(${newScale})`;
+                khomBtn.style.fontSize = `${newFontSize}rem`;
+                khomBtn.style.opacity = newOpacity;
+                khomBtn.style.transition = `all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55)`;
+                
+            } else {
+                khomBtn.style.opacity = '0';
+                khomBtn.style.transform = 'scale(0)';
+                setTimeout(() => {
+                    showSadResult();
+                }, 500);
+            }
+        });
+
+        function showSadResult() {
+            resultEmoji.textContent = '😭💔';
+            resultText.innerHTML = `
+                <div style="font-size: 1.5rem; margin-bottom: 1rem; font-weight: 400;">
+                    SAD ZỒI ĐẤY... 😢
+                </div>
+                <div style="font-size: 1.2rem; font-weight: 400;">
+                    Khóc lun 🥺💔
+                </div>
+            `;
+            result.classList.add('show');
+        }
+        googleFormModal.addEventListener('click', function(e) {
+            if (e.target === googleFormModal) {
+                googleFormModal.classList.remove('show');
+                okBtn.style.pointerEvents = 'auto';
+                khomBtn.style.pointerEvents = 'auto';
+            }
+        });
+        result.addEventListener('click', function() {
+            location.reload();
+        });
+    </script>
+</body>
+</html>
